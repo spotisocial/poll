@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Poll with Button Results and Browser Storage</title>
+  <style>
+    .poll-button {
+      margin: 5px;
+      padding: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .poll-button span {
+  flex: 1;
+  text-align: center;
+}
+
+  </style>
+</head>
+<body>
+  <h1>Poll</h1>
+  <p>Choose your option:</p>
+  <div id="options">
+    <button class="poll-button" id="option1">Option 1 (0%)</button>
+    <button class="poll-button" id="option2">Option 2 (0%)</button>
+  </div>
+
+  <script src="script.js"></script>
+
+  <script>
+    const options = document.querySelectorAll('#options button');
+
+let votes = {
+  option1: 0,
+  option2: 0,
+};
+
+// Retrieve stored votes from browser storage
+const storedVotes = JSON.parse(localStorage.getItem('votes'));
+
+if (storedVotes) {
+  Object.assign(votes, storedVotes);
+  updateResults();
+}
+
+options.forEach(button => {
+  button.addEventListener('click', () => {
+    const optionId = button.id;
+    votes[optionId]++;
+
+    // Store updated votes in browser storage
+    localStorage.setItem('votes', JSON.stringify(votes));
+    updateResults();
+  });
+});
+
+function updateResults() {
+  let totalVotes = 0;
+  for (const option in votes) {
+    totalVotes += votes[option];
+  }
+
+  for (const option in votes) {
+    const voteCount = votes[option];
+    const percentage = Math.round((voteCount / totalVotes) * 100);
+
+    const button = document.getElementById(option);
+    button.textContent = `${option.substring(6)} (${percentage}%)`;
+  }
+}
+
+  </script>
+</body>
+</html>
